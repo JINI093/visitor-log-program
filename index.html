@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방문자 기록 프로그램</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 5px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #exportButton, #deleteButton {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>방문자 기록 프로그램</h1>
+    <form id="visitorForm">
+        <input type="text" id="name" placeholder="이름" required>
+        <input type="text" id="purpose" placeholder="학번" required>
+        <input type="text" id="major" placeholder="전공" required>
+        <button type="submit">방문 기록</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>이름</th>
+                <th>학번</th>
+                <th>전공</th>
+                <th>현재 위치</th>
+                <th>방문 시간</th>
+            </tr>
+        </thead>
+        <tbody id="visitorLog"></tbody>
+    </table>
+    <button id="exportButton">방문 기록 내보내기</button>
+    <button id="deleteButton">방문 기록 삭제</button>
+
+    <script>
+        const visitorForm = document.getElementById('visitorForm');
+        const visitorLog = document.getElementById('visitorLog');
+        const exportButton = document.getElementById('exportButton');
+        const deleteButton = document.getElementById('deleteButton');
+        let visitors = [];
+
+        function logMessage(message, isError = false) {
+            if (isError) {
+                console.error(message);
+            } else {
+                console.log(message);
+            }
+        }
+
+        function loadVisitors() {
+            try {
+                const storedVisitors = localStorage.getItem('visitors');
+                logMessage('저장된 방문자 데이터: ' + storedVisitors);
+                if (storedVisitors) {
+                    visitors = JSON.parse(storedVisitors);
+                }
+                updateVisitorLog();
+            } catch (error) {
+                logMessage('방문자 데이터 로드 중 오류 발생: ' + error.message, true);
+            }
+        }
+
+        function addVisitor(name, purpose, major, location) {
+            try {
+                const visitTime = new Date().toLocaleString();
+                visitors.push({ name, purpose, major, location, visitTime });
+                logMessage('방문자 추가: ' + JSON.stringify({ name, purpose, major, location, visitTime }));
+                saveVisitors();
+                updateVisitorLog();
+            } catch (error) {
+                logMessage('방문자 추가 중 오류 발생: ' + error.message, true);
+            }
+        }
+
+        function saveVisitors() {
+            try {
+                localStorage.setItem('visitors', JSON.stringify(visitors));
+                logMessage('방문자 데이터 저장 완료');
+            } catch (error) {
+                logMessage('방문자 데이터 저장 중 오류 발생: ' + error.message, true);
+            }
+        }
+
+        function updateVisitorLog() {
+            try {
+                visitorLog.innerHTML = '';
+                logMessage('방문자 로그 업데이트 중...');
+                visitors.forEach(visitor => {
+                    const row = visitorLog.insertRow();
+                    row.insertCell().textContent = visitor.name;
+                    row.insertCell().textContent = visitor.purpose;
+                    row.insertCell().textContent = visitor.major;
+                    row.insertCell().textContent = visitor.location;
+                    row.insertCell().textContent = visitor.visitTime;
+                });
+                logMessage('방문자 로그 업데이트 완료');
+            } catch (error) {
+                logMessage('방문자 로그 업데이트 중 오류 발생: ' + error.message, true);
+            }
+        }
+
+        function getLocation(callback) {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        getAddressFromCoordinates(latitude, longitude, callback);
+                    },
+                    function(error) {
+                        logMessage('위치 정보를 가져오는 데 실패했습니다: ' + error.message, true);
+                        callback('위치 정보 없음');
+                    }
+                );
+            } else {
+                logMessage('이 브라우저는 위치 정보를 지원하지 않습니다.', true);
+                callback('위치 정보 없음');
+            }
+        }
+
+        function getAddressFromCoordinates(latitude, longitude, callback) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address;
+                    const detailedAddress = [
+                        address.road,
+                        address.suburb,
+                        address.city || address.town || address.village,
+                        address.state,
+                        address.country
+                    ].filter(Boolean).join(', ');
+                    callback(detailedAddress || '상세 주소를 찾을 수 없습니다');
+                })
+                .catch(error => {
+                    logMessage('주소 정보를 가져오는 데 실패했습니다: ' + error.message, true);
+                    callback('위치 정보 없음');
+                });
+        }
+
+        function deleteVisitorLogs() {
+            try {
+                localStorage.removeItem('visitors');
+                visitors = [];
+                updateVisitorLog();
+                logMessage('모든 방문자 기록이 삭제되었습니다.');
+            } catch (error) {
+                logMessage('방문자 기록 삭제 중 오류 발생: ' + error.message, true);
+            }
+        }
+
+        visitorForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const purpose = document.getElementById('purpose').value;
+            const major = document.getElementById('major').value;
+            
+            getLocation((location) => {
+                logMessage('폼 제출됨: ' + JSON.stringify({ name, purpose, major, location }));
+                addVisitor(name, purpose, major, location);
+                visitorForm.reset();
+            });
+        });
+
+        exportButton.addEventListener('click', () => {
+            try {
+                logMessage('방문자 데이터 내보내기 시작...');
+                const csvContent = "data:text/csv;charset=utf-8," 
+                    + "이름,학번,전공,현재 위치,방문 시간\n"
+                    + visitors.map(v => `${v.name},${v.purpose},${v.major},${v.location},${v.visitTime}`).join("\n");
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "방문자_기록.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                logMessage('방문자 데이터 내보내기 완료');
+            } catch (error) {
+                logMessage('방문자 데이터 내보내기 중 오류 발생: ' + error.message, true);
+            }
+        });
+
+        deleteButton.addEventListener('click', () => {
+            if (confirm('모든 방문자 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                deleteVisitorLogs();
+            }
+        });
+
+        // 페이지 로드 시 방문자 데이터 로드
+        loadVisitors();
+    </script>
+</body>
+</html>
