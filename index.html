@@ -70,6 +70,7 @@
         const exportButton = document.getElementById('exportButton');
         const deleteButton = document.getElementById('deleteButton');
         let visitors = [];
+        const adminPassword = "실용104@";
 
         function logMessage(message, isError = false) {
             if (isError) {
@@ -181,6 +182,16 @@
             }
         }
 
+        function checkAdminPassword(action) {
+            const password = prompt("관리자 비밀번호를 입력하세요:");
+            if (password === adminPassword) {
+                return true;
+            } else {
+                alert("비밀번호가 올바르지 않습니다.");
+                return false;
+            }
+        }
+
         visitorForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('name').value;
@@ -195,28 +206,32 @@
         });
 
         exportButton.addEventListener('click', () => {
-            try {
-                logMessage('방문자 데이터 내보내기 시작...');
-                const csvContent = "data:text/csv;charset=utf-8," 
-                    + "이름,학번,전공,현재 위치,방문 시간\n"
-                    + visitors.map(v => `${v.name},${v.purpose},${v.major},${v.location},${v.visitTime}`).join("\n");
-                
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "방문자_기록.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                logMessage('방문자 데이터 내보내기 완료');
-            } catch (error) {
-                logMessage('방문자 데이터 내보내기 중 오류 발생: ' + error.message, true);
+            if (checkAdminPassword("export")) {
+                try {
+                    logMessage('방문자 데이터 내보내기 시작...');
+                    const csvContent = "data:text/csv;charset=utf-8," 
+                        + "이름,학번,전공,현재 위치,방문 시간\n"
+                        + visitors.map(v => `${v.name},${v.purpose},${v.major},${v.location},${v.visitTime}`).join("\n");
+                    
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", "방문자_기록.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    logMessage('방문자 데이터 내보내기 완료');
+                } catch (error) {
+                    logMessage('방문자 데이터 내보내기 중 오류 발생: ' + error.message, true);
+                }
             }
         });
 
         deleteButton.addEventListener('click', () => {
-            if (confirm('모든 방문자 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-                deleteVisitorLogs();
+            if (checkAdminPassword("delete")) {
+                if (confirm('모든 방문자 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                    deleteVisitorLogs();
+                }
             }
         });
 
