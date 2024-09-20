@@ -136,7 +136,8 @@ function deleteAllVisitors() {
 
 function saveToCSV() {
     if (checkAdminPassword("방문자 기록 내보내기")) {
-        let csvContent = "이름,학번,전공,위치,방문시간\n";
+        let csvContent = "\uFEFF"; // BOM 추가
+        csvContent += "이름,학번,전공,위치,방문시간\n";
         visitors.forEach(visitor => {
             csvContent += `${visitor.name},${visitor.studentID},${visitor.major},${visitor.location},${visitor.visitTime.toLocaleString()}\n`;
         });
@@ -146,7 +147,7 @@ function saveToCSV() {
         if (link.download !== undefined) {
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", "방문자_기록.csv");
+            link.setAttribute("download", "visitor_log.csv"); // 파일명을 영문으로 변경
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
