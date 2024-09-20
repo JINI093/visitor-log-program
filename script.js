@@ -164,12 +164,12 @@ function saveToExcel() {
 window.addVisitor = addVisitor;
 window.deleteVisitor = deleteVisitor;
 window.deleteAllVisitors = deleteAllVisitors;
-window.saveToCSV = saveToCSV;
+window.saveToExcel = saveToExcel;
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM 완전히 로드됨");
     loadVisitors(); // 저장된 데이터 불러오기
     document.getElementById('addVisitorBtn').addEventListener('click', addVisitor);
-    document.getElementById('saveCSVBtn').addEventListener('click', saveToCSV);
+    document.getElementById('saveExcelBtn').addEventListener('click', saveToExcel);
     document.getElementById('deleteAllBtn').addEventListener('click', deleteAllVisitors);
 });
