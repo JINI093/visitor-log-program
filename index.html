@@ -3,149 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>방문자 기록 프로그램</title>
-    <style>
-        /* 기존 스타일 유지 */
-    </style>
+    <title>방문자 기록 시스템</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>방문자 기록 프로그램</h1>
-    <form id="visitorForm">
-        <input type="text" id="name" placeholder="이름" required>
-        <input type="text" id="purpose" placeholder="학번" required>
-        <input type="text" id="major" placeholder="전공" required>
-        <button type="submit">방문 기록</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>이름</th>
-                <th>학번</th>
-                <th>전공</th>
-                <th>현재 위치</th>
-                <th>방문 시간</th>
-            </tr>
-        </thead>
-        <tbody id="visitorLog"></tbody>
-    </table>
-    <button id="exportButton">방문 기록 내보내기</button>
-    <button id="deleteButton">방문 기록 삭제</button>
-
-    <script>
-        const visitorForm = document.getElementById('visitorForm');
-        const visitorLog = document.getElementById('visitorLog');
-        const exportButton = document.getElementById('exportButton');
-        const deleteButton = document.getElementById('deleteButton');
-        const adminPassword = "실용104@";
-
-        // API 엔드포인트 (실제 서버 주소로 변경 필요)
-        const API_URL = 'http://your-server-url.com/visitor_api.php';
-
-        async function loadVisitors() {
-            try {
-                const response = await fetch(API_URL);
-                const visitors = await response.json();
-                updateVisitorLog(visitors);
-            } catch (error) {
-                console.error('방문자 데이터 로드 중 오류 발생:', error);
-            }
-        }
-
-        async function addVisitor(name, purpose, major, location) {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ name, purpose, major, location }),
-                });
-                const result = await response.json();
-                if (result.message) {
-                    console.log('방문자 추가 성공');
-                    loadVisitors();
-                } else {
-                    throw new Error(result.error || '서버 응답 오류');
-                }
-            } catch (error) {
-                console.error('방문자 추가 중 오류 발생:', error);
-            }
-        }
-
-        function updateVisitorLog(visitors) {
-            visitorLog.innerHTML = '';
-            visitors.forEach(visitor => {
-                const row = visitorLog.insertRow();
-                row.insertCell().textContent = visitor.name;
-                row.insertCell().textContent = visitor.purpose;
-                row.insertCell().textContent = visitor.major;
-                row.insertCell().textContent = visitor.location;
-                row.insertCell().textContent = visitor.visit_time;
-            });
-        }
-
-        function getLocation(callback) {
-            // 기존 getLocation 함수 유지
-        }
-
-        async function deleteVisitorLogs() {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${adminPassword}`,
-                    },
-                });
-                const result = await response.json();
-                if (result.message) {
-                    console.log('모든 방문자 기록이 삭제되었습니다.');
-                    loadVisitors();
-                } else {
-                    throw new Error(result.error || '서버 응답 오류');
-                }
-            } catch (error) {
-                console.error('방문자 기록 삭제 중 오류 발생:', error);
-            }
-        }
-
-        function checkAdminPassword(action) {
-            const password = prompt("관리자 비밀번호를 입력하세요:");
-            if (password === adminPassword) {
-                return true;
-            } else {
-                alert("비밀번호가 올바르지 않습니다.");
-                return false;
-            }
-        }
-
-        visitorForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const purpose = document.getElementById('purpose').value;
-            const major = document.getElementById('major').value;
-            
-            getLocation((location) => {
-                addVisitor(name, purpose, major, location);
-                visitorForm.reset();
-            });
-        });
-
-        exportButton.addEventListener('click', () => {
-            if (checkAdminPassword("export")) {
-                window.location.href = `${API_URL}?export=csv`;
-            }
-        });
-
-        deleteButton.addEventListener('click', () => {
-            if (checkAdminPassword("delete")) {
-                if (confirm('모든 방문자 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-                    deleteVisitorLogs();
-                }
-            }
-        });
-
-        // 페이지 로드 시 방문자 데이터 로드
-        loadVisitors();
-    </script>
+    <div class="container">
+        <h1>방문자 기록 시스템</h1>
+        <div class="form-container">
+            <input type="text" id="name" placeholder="이름">
+            <input type="text" id="studentID" placeholder="학번">
+            <input type="text" id="major" placeholder="전공">
+            <button id="addVisitorBtn">방문자 추가</button>
+        </div>
+        <div class="button-container">
+            <button id="saveCSVBtn">방문자 기록 내보내기</button>
+            <button id="deleteAllBtn">모두 삭제</button>
+        </div>
+        <h2>방문자 목록</h2>
+        <ul id="visitorList"></ul>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
