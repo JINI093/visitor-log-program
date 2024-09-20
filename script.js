@@ -134,25 +134,29 @@ function deleteAllVisitors() {
     }
 }
 
-function saveToCSV() {
+function saveToExcel() {
     if (checkAdminPassword("방문자 기록 내보내기")) {
-        let csvContent = "\uFEFF"; // BOM 추가
-        csvContent += "이름,학번,전공,위치,방문시간\n";
+        // 데이터 준비
+        const data = [
+            ["이름", "학번", "전공", "위치", "방문시간"]
+        ];
         visitors.forEach(visitor => {
-            csvContent += `${visitor.name},${visitor.studentID},${visitor.major},${visitor.location},${visitor.visitTime.toLocaleString()}\n`;
+            data.push([
+                visitor.name,
+                visitor.studentID,
+                visitor.major,
+                visitor.location,
+                visitor.visitTime.toLocaleString()
+            ]);
         });
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "visitor_log.csv"); // 파일명을 영문으로 변경
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        // 워크북 생성
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, "방문자 기록");
+
+        // 파일 저장
+        XLSX.writeFile(wb, "visitor_log.xlsx");
     }
 }
 
