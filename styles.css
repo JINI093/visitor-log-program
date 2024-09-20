@@ -1,0 +1,86 @@
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #E6E6FA; /* 연한 라벤더 색상 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 600px;
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    color: #4B0082; /* 진한 남색 */
+    text-align: center;
+}
+
+.form-container {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #DDA0DD; /* 연한 자주색 */
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    display: block;
+    width: 100%;
+    background: #9370DB; /* 중간 보라색 */
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #8A2BE2; /* 진한 보라색 */
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.button-container button {
+    width: auto;
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+li {
+    background: #F0E6FF; /* 매우 연한 보라색 */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+li button {
+    background: #FF69B4; /* 핫핑크 */
+    padding: 5px 10px;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+li button:hover {
+    background: #FF1493; /* 진한 핑크 */
+}
