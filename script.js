@@ -169,7 +169,15 @@ window.saveToExcel = saveToExcel;
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM 완전히 로드됨");
     loadVisitors(); // 저장된 데이터 불러오기
-    document.getElementById('addVisitorBtn').addEventListener('click', addVisitor);
+    
+    // 이벤트 리스너 추가
+    document.getElementById('addVisitorBtn').addEventListener('click', function() {
+        console.log("방문자 추가 버튼 클릭됨");
+        addVisitor();
+    });
     document.getElementById('saveExcelBtn').addEventListener('click', saveToExcel);
     document.getElementById('deleteAllBtn').addEventListener('click', deleteAllVisitors);
 });
+
+// 디버깅을 위한 콘솔 로그 추가
+console.log("script.js 로드 완료");
