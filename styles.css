@@ -3,7 +3,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #E6E6FA; /* 연한 라벤더 색상 */
+    background-color: #E6E6FA;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,7 +20,7 @@ body {
 }
 
 h1, h2 {
-    color: #4B0082; /* 진한 남색 */
+    color: #4B0082;
     text-align: center;
 }
 
@@ -32,7 +32,7 @@ input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid #DDA0DD; /* 연한 자주색 */
+    border: 1px solid #DDA0DD;
     border-radius: 5px;
     box-sizing: border-box;
 }
@@ -40,7 +40,7 @@ input[type="text"] {
 button {
     display: block;
     width: 100%;
-    background: #9370DB; /* 중간 보라색 */
+    background: #9370DB;
     color: #fff;
     padding: 10px;
     border: none;
@@ -51,7 +51,7 @@ button {
 }
 
 button:hover {
-    background: #8A2BE2; /* 진한 보라색 */
+    background: #8A2BE2;
 }
 
 .button-container {
@@ -61,13 +61,16 @@ button:hover {
 }
 
 .button-container button {
-    width: auto;
-    padding: 10px 15px;
-    white-space: nowrap;
+    width: 48%;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
 }
 
 li {
-    background: #F0E6FF; /* 매우 연한 보라색 */
+    background: #F0E6FF;
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
@@ -75,12 +78,12 @@ li {
 }
 
 li button {
-    background: #FF69B4; /* 핫핑크 */
+    background: #FF69B4;
     padding: 5px 10px;
     margin-top: 10px;
     font-size: 0.9em;
 }
 
 li button:hover {
-    background: #FF1493; /* 진한 핑크 */
+    background: #FF1493;
 }
